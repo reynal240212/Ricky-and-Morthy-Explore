@@ -39,8 +39,8 @@ function AppLayout() {
           <div className="hero-content">
             <h1>Explora el multiverso</h1>
             <p>
-              Descubre personajes, mundos y episodios de Rick y Morty en una
-              experiencia tipo streaming.
+              Descubre personajes, mundos y episodios de Rick y Morty a través de
+              nuestra aplicación.
             </p>
           </div>
         </section>
