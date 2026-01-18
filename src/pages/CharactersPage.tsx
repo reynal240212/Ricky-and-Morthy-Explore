@@ -44,10 +44,7 @@ export function CharactersPage() {
 
   return (
     <div className="app-main">
-      <section className="hero-content">
-        <h1>Explora el multiverso</h1>
-        <p>Descubre personajes, mundos y episodios en una experiencia visual completa.</p>
-      </section>
+      
 
       <h2 style={{ color: 'var(--accent)', marginBottom: '1.5rem' }}>Personajes</h2>
       
