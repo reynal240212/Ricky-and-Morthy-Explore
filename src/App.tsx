@@ -3,60 +3,82 @@ import {
   RouterProvider,
   Outlet,
   NavLink,
+  Link,
 } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { CharactersPage } from './pages/CharactersPage';
 import { CharacterDetailPage } from './pages/CharacterDetailPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import './App.css';
 
 function AppLayout() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Controlar el estado del scroll para el efecto de glassmorphism en el header
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div className="app-logo">
-          <div className="app-logo-badge">RM</div>
-          <span>Rick &amp; Morty Explorer</span>
+      {/* HEADER DINÁMICO ESTILO RICKFLIX */}
+      <header className={`app-header ${isScrolled ? 'scrolled' : ''}`}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+          <Link to="/" className="nav-logo">RICKFLIX</Link>
+          
+          <nav className="nav-links">
+            <NavLink 
+              to="/characters" 
+              className={({ isActive }) => (isActive ? 'active' : '')}
+            >
+              Inicio
+            </NavLink>
+            <NavLink 
+              to="/favorites" 
+              className={({ isActive }) => (isActive ? 'active' : '')}
+            >
+              Mi Lista
+            </NavLink>
+          </nav>
         </div>
 
-        <nav className="app-nav">
-          <NavLink
-            to="/characters"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            Personajes
-          </NavLink>
-          <NavLink
-            to="/favorites"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            Favoritos
-          </NavLink>
-        </nav>
+        {/* Espacio para perfil o buscador global si se desea */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ 
+            width: '32px', 
+            height: '32px', 
+            background: 'var(--netflix-red)', 
+            borderRadius: '4px',
+            cursor: 'pointer' 
+          }}></div>
+        </div>
       </header>
 
+      {/* CONTENIDO PRINCIPAL */}
       <main className="app-main">
-        <section className="hero">
-          <div className="hero-content">
-            <h1>Explora el multiverso</h1>
-            <p>
-              Descubre personajes, mundos y episodios de Rick y Morty a través de
-              nuestra aplicación.
-            </p>
-          </div>
-        </section>
-
-        <section className="content-section">
-          <Outlet />
-        </section>
+        {/* Eliminamos el hero estático de aquí, ya que cada página maneja su propio Hero */}
+        <Outlet />
       </main>
 
-      <footer className="app-footer">
-        <span>Rick &amp; Morty Explorer · Code Challenge</span>
+      <footer className="app-footer" style={{
+        padding: '40px 4%',
+        textAlign: 'center',
+        color: 'var(--text-soft)',
+        fontSize: '0.8rem',
+        borderTop: '1px solid var(--border-subtle)',
+        marginTop: '50px'
+      }}>
+        <span>© 2026 Rick & Morty Explorer · Creado para Pink Tech Code Challenge</span>
       </footer>
     </div>
   );
 }
 
+// Configuración de Rutas
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
