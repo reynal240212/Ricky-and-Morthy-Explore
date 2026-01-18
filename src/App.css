@@ -1,18 +1,11 @@
-/* Variables y Reset */
 :root {
   color-scheme: dark;
   --bg: #020617;
   --bg-elevated: #0b1120;
   --border-subtle: #1f2937;
   --accent: #22c55e;
-  --accent-soft: #22c55e33;
   --text: #e5e7eb;
   --text-soft: #9ca3af;
-  --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-}
-
-* {
-  box-sizing: border-box;
 }
 
 body {
@@ -22,93 +15,45 @@ body {
   color: var(--text);
 }
 
-/* Layout */
-.app-shell {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.app-main {
-  flex: 1;
+/* Header transparente estilo Netflix */
+.app-header {
+  position: fixed;
+  top: 0;
   width: 100%;
-  max-width: 1400px;
-  /* Expandido para llenar la pantalla */
-  margin: 0 auto;
-  padding: 2rem 5%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 4%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  transition: background 0.3s;
 }
 
-/* Sistema de Grid Profesional */
+/* Contenedor principal sin límites laterales */
+.app-main {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  /* Eliminamos el padding para que el Hero sea total */
+}
+
+/* Grid de personajes estilo catálogo */
 .characters-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 0 4%;
+  /* Margen solo para las tarjetas */
 }
 
-/* Componente Card (Separado de la lógica) */
+/* Estilo de tarjeta Netflix */
 .character-card {
-  background: var(--bg-elevated);
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid var(--border-subtle);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  transition: transform 0.3s ease;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
 }
 
 .character-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(34, 197, 94, 0.2);
-}
-
-.card-image-container {
-  position: relative;
-  width: 100%;
-}
-
-.card-image {
-  width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-  display: block;
-}
-
-.status-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 0.7rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: white;
-}
-
-.status-alive {
-  background: #22c55e;
-}
-
-.status-dead {
-  background: #ef4444;
-}
-
-.status-unknown {
-  background: #64748b;
-}
-
-.card-content {
-  padding: 16px;
-}
-
-.card-title {
-  margin: 0 0 4px 0;
-  font-size: 1.1rem;
-}
-
-.card-subtitle {
-  margin: 0;
-  color: var(--text-soft);
-  font-size: 0.9rem;
+  transform: scale(1.08);
+  z-index: 10;
 }
