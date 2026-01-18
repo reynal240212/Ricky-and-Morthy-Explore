@@ -4,33 +4,46 @@ import {
   Outlet,
   NavLink,
   Link,
+  ScrollRestoration
 } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+
+// Importaciones de componentes
 import { CharactersPage } from './pages/CharactersPage';
 import { CharacterDetailPage } from './pages/CharacterDetailPage';
 import { FavoritesPage } from './pages/FavoritesPage';
+
+// Estilos globales
 import './App.css';
 
+/**
+ * Layout principal que envuelve toda la aplicación.
+ * Mantiene el Header y Footer constantes.
+ */
 function AppLayout() {
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Controlar el estado del scroll para el efecto de glassmorphism en el header
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      // Optimizamos el cambio de estado solo cuando cruza el umbral
+      const scrolled = window.scrollY > 50;
+      setIsScrolled(scrolled);
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <div className="app-shell">
-      {/* HEADER DINÁMICO ESTILO RICKFLIX */}
+      {/* ScrollRestoration asegura que al navegar el scroll vuelva arriba automáticamente */}
+      <ScrollRestoration />
+
       <header className={`app-header ${isScrolled ? 'scrolled' : ''}`}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+        <div className="header-left">
           <Link to="/" className="nav-logo">RICKFLIX</Link>
           
-          <nav className="nav-links">
+          <nav className="nav-links" aria-label="Navegación principal">
             <NavLink 
               to="/characters" 
               className={({ isActive }) => (isActive ? 'active' : '')}
@@ -46,59 +59,51 @@ function AppLayout() {
           </nav>
         </div>
 
-        {/* Espacio para perfil o buscador global si se desea */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <div style={{ 
-            width: '32px', 
-            height: '32px', 
-            background: 'var(--netflix-red)', 
-            borderRadius: '4px',
-            cursor: 'pointer' 
-          }}></div>
+        <div className="header-right">
+          <div className="profile-badge" title="Usuario">RM</div>
         </div>
       </header>
 
-      {/* CONTENIDO PRINCIPAL */}
-      <main className="app-main">
-        {/* Eliminamos el hero estático de aquí, ya que cada página maneja su propio Hero */}
+      <main className="app-main" role="main">
         <Outlet />
       </main>
 
-      <footer className="app-footer" style={{
-        padding: '40px 4%',
-        textAlign: 'center',
-        color: 'var(--text-soft)',
-        fontSize: '0.8rem',
-        borderTop: '1px solid var(--border-subtle)',
-        marginTop: '50px'
-      }}>
-        <span>© 2026 Rick & Morty Explorer · Creado para Pink Tech Code Challenge</span>
+      <footer className="app-footer">
+        <div className="footer-content">
+          <p>© 2026 Rick & Morty Explorer · Pink Tech Challenge</p>
+          <p className="footer-sub">Barranquilla, Colombia</p>
+        </div>
       </footer>
     </div>
   );
 }
 
-// Configuración de Rutas
+// Configuración de Rutas con manejo de "/" y "/characters"
 const router = createBrowserRouter([
   {
+    path: '/',
     element: <AppLayout />,
     children: [
       {
-        path: '/',
+        index: true, // Esto hace que "/" cargue CharactersPage
         element: <CharactersPage />,
       },
       {
-        path: '/characters',
+        path: 'characters',
         element: <CharactersPage />,
       },
       {
-        path: '/characters/:id',
+        path: 'characters/:id',
         element: <CharacterDetailPage />,
       },
       {
-        path: '/favorites',
+        path: 'favorites',
         element: <FavoritesPage />,
       },
+      {
+        path: '*', // Catch-all para rutas no existentes
+        element: <div className="error-page"><h1>404 - Portal Cerrado</h1><Link to="/">Volver al inicio</Link></div>
+      }
     ],
   },
 ]);
