@@ -4,121 +4,47 @@ import { getCharacterById, type Character } from '../api/charactersApi';
 import { useFavorites } from '../hooks/useFavorites';
 
 export function CharacterDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const [character, setCharacter] = useState<Character | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
-    if (!id) return;
-
-    async function load() {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await getCharacterById(Number(id));
-        setCharacter(data);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    load();
+    if (id) getCharacterById(Number(id)).then(setCharacter);
   }, [id]);
 
-  if (loading) return <p>Cargando personaje...</p>;
-  if (error) return <p>Ocurrió un error: {error}</p>;
-  if (!character) return <p>No se encontró el personaje.</p>;
-
-  const fav = isFavorite(character.id);
+  if (!character) return <div className="app-main">Cargando...</div>;
 
   return (
-    <div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 260px) minmax(0, 1fr)',
-          gap: 24,
-          alignItems: 'flex-start',
-        }}
-      >
-        <div>
-          <img
-            src={character.image}
-            alt={character.name}
-            style={{
-              width: '100%',
-              borderRadius: 16,
-              boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-            }}
-          />
-        </div>
-
-        <div>
-          <h1 style={{ fontSize: '1.8rem', marginBottom: 8 }}>
-            {character.name}
-          </h1>
-          <p style={{ color: '#9ca3af', marginBottom: 16 }}>
-            {character.species} · {character.status}
-          </p>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: 12,
-              marginBottom: 24,
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: '#020617',
-                padding: 12,
-                borderRadius: 10,
-                border: '1px solid #1f2937',
-              }}
-            >
-              <p
-                style={{
-                  fontSize: '0.75rem',
-                  color: '#9ca3af',
-                  marginBottom: 4,
-                }}
-              >
-                Origen
-              </p>
-              <p style={{ margin: 0 }}>{character.origin?.name}</p>
-            </div>
-
-            <div
-              style={{
-                backgroundColor: '#020617',
-                padding: 12,
-                borderRadius: 10,
-                border: '1px solid #1f2937',
-              }}
-            >
-              <p
-                style={{
-                  fontSize: '0.75rem',
-                  color: '#9ca3af',
-                  marginBottom: 4,
-                }}
-              >
-                Última localización
-              </p>
-              <p style={{ margin: 0 }}>{character.location?.name}</p>
-            </div>
+    <div className="app-main">
+      <div className="detail-layout">
+        <img src={character.image} alt={character.name} className="detail-image" />
+        
+        <div className="detail-info">
+          <h1>{character.name}</h1>
+          <p className="detail-meta">{character.species} · {character.status}</p>
+          
+          <div className="info-grid">
+            <InfoBox label="Origen" value={character.origin?.name} />
+            <InfoBox label="Localización" value={character.location?.name} />
           </div>
 
-          <button onClick={() => toggleFavorite(character.id)}>
-            {fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          <button 
+            className={isFavorite(character.id) ? 'btn-danger' : 'btn-primary'}
+            onClick={() => toggleFavorite(character.id)}
+          >
+            {isFavorite(character.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function InfoBox({ label, value }: { label: string, value?: string }) {
+  return (
+    <div className="info-box">
+      <span className="info-label">{label}</span>
+      <p className="info-value">{value || 'Desconocido'}</p>
     </div>
   );
 }

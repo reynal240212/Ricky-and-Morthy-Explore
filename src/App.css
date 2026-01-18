@@ -1,3 +1,4 @@
+/* Variables y Reset */
 :root {
   color-scheme: dark;
   --bg: #020617;
@@ -7,83 +8,107 @@
   --accent-soft: #22c55e33;
   --text: #e5e7eb;
   --text-soft: #9ca3af;
+  --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
 }
 
-*, *::before, *::after {
+* {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   background-color: var(--bg);
   color: var(--text);
-  overflow-x: hidden;
 }
 
+/* Layout */
 .app-shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(circle at top, var(--accent-soft), transparent 70%), var(--bg);
-}
-
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 5%;
-  border-bottom: 1px solid var(--border-subtle);
-  background: rgba(2, 6, 23, 0.8);
-  backdrop-filter: blur(12px);
 }
 
 .app-main {
   flex: 1;
   width: 100%;
-  max-width: 1400px; /* Expandido para pantallas grandes */
+  max-width: 1400px;
+  /* Expandido para llenar la pantalla */
   margin: 0 auto;
   padding: 2rem 5%;
 }
 
-/* Sistema de rejilla que rellena el espacio vacío */
+/* Sistema de Grid Profesional */
 .characters-grid {
   display: grid;
-  /* auto-fill + 1fr obliga a las tarjetas a estirarse para llenar la fila */
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 24px;
+}
+
+/* Componente Card (Separado de la lógica) */
+.character-card {
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.character-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(34, 197, 94, 0.2);
+}
+
+.card-image-container {
+  position: relative;
   width: 100%;
 }
 
-.hero-content {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), var(--bg-elevated));
-  border: 1px solid var(--border-subtle);
-  border-radius: 20px;
-  padding: 2.5rem;
-  margin-bottom: 2rem;
+.card-image {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  display: block;
 }
 
-button {
+.status-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
   border-radius: 8px;
-  border: 1px solid var(--accent);
-  background: transparent;
-  color: var(--text);
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
 }
 
-button:hover:not(:disabled) {
-  background: var(--accent);
-  color: #020617;
+.status-alive {
+  background: #22c55e;
 }
 
-@media (max-width: 768px) {
-  .characters-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 16px;
-  }
+.status-dead {
+  background: #ef4444;
+}
+
+.status-unknown {
+  background: #64748b;
+}
+
+.card-content {
+  padding: 16px;
+}
+
+.card-title {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+}
+
+.card-subtitle {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.9rem;
 }
