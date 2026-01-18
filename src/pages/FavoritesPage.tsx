@@ -18,7 +18,7 @@ export function FavoritesPage() {
       
       setLoading(true);
       try {
-        // Obtenemos todos los personajes favoritos en paralelo
+        // Opción optimizada: Carga en paralelo
         const data = await Promise.all(
           favorites.map((id) => getCharacterById(id))
         );
@@ -29,25 +29,19 @@ export function FavoritesPage() {
         setLoading(false);
       }
     }
-
     load();
   }, [favorites]);
 
-  // Requerimiento: Empty state con CTA "Explorar personajes" 
+  // Empty state con CTA "Explorar personajes"
   if (!favorites.length && !loading) {
     return (
       <div className="app-main" style={{ 
-        height: '100vh', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        textAlign: 'center',
-        padding: '0 4%'
+        height: '80vh', display: 'flex', flexDirection: 'column', 
+        justifyContent: 'center', alignItems: 'center', textAlign: 'center' 
       }}>
-        <h1 style={{ fontSize: '3rem', marginBottom: '10px' }}>Tu lista está vacía</h1>
+        <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '10px' }}>Tu lista está vacía</h1>
         <p style={{ color: 'var(--text-soft)', marginBottom: '30px', maxWidth: '500px' }}>
-          Parece que aún no has guardado a ningún personaje del multiverso en tus favoritos.
+          Parece que aún no has guardado personajes en tus favoritos.
         </p>
         <Link to="/characters">
           <button className="btn-play">Explorar personajes</button>
@@ -59,48 +53,47 @@ export function FavoritesPage() {
   return (
     <div className="app-main" style={{ padding: '120px 4% 40px' }}>
       <header style={{ marginBottom: '40px' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: '900', margin: 0 }}>Mis Favoritos</h1>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: '900', margin: 0 }}>Mi Lista</h1>
         <p style={{ color: 'var(--accent)', marginTop: '10px' }}>
-          {characters.length} {characters.length === 1 ? 'personaje guardado' : 'personajes guardados'}
+          {characters.length} {characters.length === 1 ? 'título guardado' : 'títulos guardados'}
         </p>
       </header>
 
-      {loading && characters.length === 0 ? (
-        <div className="characters-grid">
-          {[...Array(4)].map((_, i) => <div key={i} className="skeleton" style={{height: '180px'}} />)}
-        </div>
-      ) : (
-        <div className="characters-grid">
-          {characters.map((c) => (
+      <div className="characters-grid" style={{ marginTop: '0' }}>
+        {loading && characters.length === 0 ? (
+          [...Array(4)].map((_, i) => <div key={i} className="skeleton" style={{ height: '300px' }} />)
+        ) : (
+          characters.map((c) => (
             <article key={c.id} className="character-card">
-              {/* Al hacer clic en la imagen vamos al detalle */}
               <div onClick={() => navigate(`/characters/${c.id}`)}>
                 <img src={c.image} alt={c.name} />
               </div>
               
-              <div className="card-info" style={{ opacity: 1, background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)' }}>
-                <p style={{ fontWeight: 'bold', margin: '0 0 10px 0', fontSize: '0.9rem' }}>{c.name}</p>
-                {/* Requerimiento: Permitir quitar favoritos desde la lista  */}
-                <button 
-                  onClick={() => toggleFavorite(c.id)}
-                  style={{
-                    background: '#e50914',
-                    color: 'white',
-                    border: 'none',
-                    padding: '5px 10px',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    cursor: 'pointer',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  Quitar de mi lista
-                </button>
+              <div className="card-info-overlay">
+                <div className="card-text-wrapper">
+                  <h3>{c.name}</h3>
+                  <button 
+                    onClick={() => toggleFavorite(c.id)}
+                    style={{
+                      background: 'var(--netflix-red)',
+                      color: 'white',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '4px',
+                      fontSize: '0.7rem',
+                      cursor: 'pointer',
+                      marginTop: '10px',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    ✕ Quitar
+                  </button>
+                </div>
               </div>
             </article>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }

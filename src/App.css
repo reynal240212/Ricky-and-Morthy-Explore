@@ -9,7 +9,7 @@
   --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* RESET Y SCROLLBAR PERSONALIZADA */
+/* 1. RESET Y ESTRUCTURA BASE */
 html,
 body,
 #root {
@@ -24,6 +24,7 @@ body,
   scroll-behavior: smooth;
 }
 
+/* Scrollbar estilo moderno */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -41,7 +42,7 @@ body,
   background: #475569;
 }
 
-/* HEADER CON EFECTO GLASSMORPISM AVANZADO */
+/* 2. HEADER Y NAVEGACIÓN (CORREGIDO) */
 .app-header {
   position: fixed;
   top: 0;
@@ -52,13 +53,14 @@ body,
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem 4%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
   transition: var(--transition-smooth);
+  box-sizing: border-box;
 }
 
 .app-header.scrolled {
-  background: rgba(2, 6, 23, 0.8);
-  backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(2, 6, 23, 0.85);
+  backdrop-filter: blur(15px) saturate(180%);
   padding: 0.8rem 4%;
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -72,124 +74,122 @@ body,
   filter: drop-shadow(0 0 10px rgba(229, 9, 20, 0.3));
 }
 
+/* Arreglo del Nav: Flexbox para evitar puntos y desalineación */
+.nav-links {
+  display: flex;
+  gap: 25px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
 .nav-links a {
-  color: white;
+  color: var(--text-soft);
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
-  transition: opacity 0.3s;
-  opacity: 0.8;
+  transition: color 0.3s;
 }
 
-.nav-links a:hover {
-  opacity: 1;
+.nav-links a:hover,
+.nav-links a.active {
+  color: white;
 }
 
-/* GRID CON ANIMACIÓN DE ENTRADA */
+/* 3. GRILLA Y TARJETAS (MEJORADO PARA VISIBILIDAD) */
 .characters-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
   padding: 0 4% 4rem;
-  margin-top: -80px;
+  margin-top: -60px;
+  /* Sube la grilla sobre el hero */
   position: relative;
   z-index: 10;
   animation: fadeInGrid 0.8s ease-out;
 }
 
-@keyframes fadeInGrid {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* CARDS ESTILO STREAMING */
 .character-card {
   position: relative;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
   background: var(--bg-elevated);
   cursor: pointer;
+  aspect-ratio: 2/3;
+  /* Proporción de póster */
   transition: var(--transition-smooth);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 .character-card:hover {
-  transform: scale(1.1) translateY(-10px);
+  transform: scale(1.08);
   z-index: 50;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
 }
 
 .character-card img {
   width: 100%;
-  aspect-ratio: 16/9;
+  height: 100%;
   object-fit: cover;
-  transition: filter 0.3s;
+  transition: transform 0.5s ease;
 }
 
-.card-info {
+/* Overlay de información: Nombre siempre visible con degradado */
+.card-info-overlay {
   position: absolute;
   inset: 0;
+  /* Degradado constante para legibilidad del texto blanco */
   background: linear-gradient(to top,
-      rgba(2, 6, 23, 1) 0%,
-      rgba(2, 6, 23, 0.8) 30%,
-      transparent 100%);
+      rgba(0, 0, 0, 0.95) 0%,
+      rgba(0, 0, 0, 0.5) 30%,
+      transparent 60%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 15px;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: var(--transition-smooth);
+  transition: background 0.3s;
 }
 
-.character-card:hover .card-info {
-  opacity: 1;
-  transform: translateY(0);
+.character-card:hover .card-info-overlay {
+  background: linear-gradient(to top,
+      rgba(229, 9, 20, 0.4) 0%,
+      /* Toque rojo Netflix al hacer hover */
+      rgba(0, 0, 0, 0.8) 40%,
+      transparent 100%);
 }
 
-/* SKELETON ANIMATION (Requerimiento Bonus) */
-.skeleton {
-  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
-  background-size: 200% 100%;
-  animation: loadingSkeleton 1.5s infinite;
-  border-radius: 6px;
+.card-info-overlay h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-@keyframes loadingSkeleton {
-  0% {
-    background-position: 200% 0;
-  }
-
-  100% {
-    background-position: -200% 0;
-  }
+.card-meta {
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin-top: 4px;
+  font-weight: 600;
 }
 
-/* INPUTS Y BOTONES CON FEEDBACK */
+/* 4. BOTONES E INPUTS */
 .search-input {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--border-subtle);
   color: white;
   padding: 12px 20px;
   border-radius: 20px;
-  /* Más moderno/redondeado */
-  width: 350px;
+  width: 300px;
   transition: all 0.3s;
 }
 
 .search-input:focus {
   outline: none;
   background: rgba(255, 255, 255, 0.15);
-  border-color: var(--text-soft);
-  width: 400px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  border-color: white;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
 .btn-play {
@@ -200,7 +200,10 @@ body,
   font-weight: bold;
   border-radius: 4px;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s;
 }
 
 .btn-play:hover {
@@ -208,23 +211,30 @@ body,
   transform: scale(1.05);
 }
 
-.btn-play:active {
-  transform: scale(0.95);
+/* 5. ANIMACIONES Y RESPONSIVE */
+@keyframes fadeInGrid {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
-  .search-input {
-    width: 100%;
-  }
-
-  .app-header {
-    padding: 1rem 4%;
-  }
-
   .nav-links {
     display: none;
   }
 
-  /* En móvil se ocultarían o irían a un menu */
+  .search-input {
+    width: 100%;
+  }
+
+  .characters-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    margin-top: 20px;
+  }
 }

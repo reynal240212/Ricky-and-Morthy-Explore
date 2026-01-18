@@ -11,7 +11,6 @@ export function CharactersPage() {
   const [error, setError] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Requerimiento: Los filtros deben reflejarse en la URL [cite: 50]
   const name = searchParams.get('name') || '';
   const status = searchParams.get('status') || '';
   const page = Number(searchParams.get('page')) || 1;
@@ -23,10 +22,9 @@ export function CharactersPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Requerimiento: Debounce en búsqueda de 500ms 
+  // Debounce de 500ms para búsqueda
   useEffect(() => {
     const timeout = setTimeout(() => {
-      // Actualiza la URL, lo que dispara el useEffect de carga de datos
       setSearchParams({ name: searchTerm, status, page: '1' });
     }, 500);
     return () => clearTimeout(timeout);
@@ -37,12 +35,10 @@ export function CharactersPage() {
       setLoading(true);
       setError(null);
       try {
-        // Endpoint: GET /character/?name=rick&status=alive&page=1 [cite: 53]
         const data = await getCharacters(page, { name, status });
         setCharacters(data.results);
       } catch (err) {
         setCharacters([]);
-        // Requerimiento: Manejo de errores consistente [cite: 87]
         setError("No se encontraron personajes con estos filtros.");
       } finally {
         setLoading(false);
@@ -68,34 +64,35 @@ export function CharactersPage() {
           placeholder="Buscar personajes..." 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          aria-label="Buscar personajes" // Requerimiento: Accesibilidad 
+          aria-label="Buscar personajes"
         />
       </header>
 
-      {/* Hero Section - Solo se muestra si no hay búsqueda activa */}
+      {/* Hero Section */}
       {featured && !name && (
         <section style={{
-          height: '85vh', width: '100vw',
-          backgroundImage: `linear-gradient(to right, var(--bg) 10%, transparent), linear-gradient(to top, var(--bg), transparent), url(${featured.image})`,
+          height: '70vh', width: '100vw',
+          backgroundImage: `linear-gradient(to right, var(--bg) 15%, transparent), linear-gradient(to top, var(--bg), transparent), url(${featured.image})`,
           backgroundSize: 'cover', backgroundPosition: 'center 20%',
           display: 'flex', alignItems: 'center', padding: '0 4%'
         }}>
-          <div style={{ maxWidth: '600px' }}>
-            <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', margin: 0 }}>{featured.name}</h1>
-            <p style={{ fontSize: '1.2rem', margin: '20px 0' }}>{featured.species} • {featured.status} • HD</p>
-            <button className="btn-play" onClick={() => navigate(`/characters/${featured.id}`)}>Ver Detalle</button>
+          <div style={{ maxWidth: '600px', animation: 'fadeIn 1s ease' }}>
+            <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', margin: 0, lineHeight: 1 }}>{featured.name}</h1>
+            <p style={{ fontSize: '1.1rem', margin: '15px 0', color: 'var(--text-soft)' }}>
+              <span style={{ color: 'var(--accent)' }}>98% de coincidencia</span> • {featured.species} • {featured.status}
+            </p>
+            <button className="btn-play" onClick={() => navigate(`/characters/${featured.id}`)}>▶ Ver Detalle</button>
           </div>
         </section>
       )}
 
-      {/* Filtros de estado [cite: 47] */}
-      <div style={{ padding: '40px 4% 20px' }}>
+      {/* Filtros */}
+      <div style={{ padding: '40px 4% 20px', display: 'flex', gap: '15px' }}>
         <select 
           className="search-input" 
-          style={{ width: '200px' }}
+          style={{ width: '180px', cursor: 'pointer' }}
           value={status}
           onChange={(e) => setSearchParams({ name, status: e.target.value, page: '1' })}
-          aria-label="Filtrar por estado"
         >
           <option value="">Todos los estados</option>
           <option value="alive">Vivo</option>
@@ -104,17 +101,15 @@ export function CharactersPage() {
         </select>
       </div>
 
-      {/* Grilla de Personajes con Estados de UI [cite: 26] */}
+      {/* Grilla con nombres siempre visibles */}
       <div style={{ padding: '0 4% 4rem' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '100px' }}>Cargando multiverso...</div> // Requerimiento: Loading [cite: 29]
+          <div className="loading-state">Cargando dimensiones...</div>
         ) : error ? (
-          <div style={{ textAlign: 'center', padding: '50px' }}>
+          <div className="error-container">
             <p>{error}</p>
-            <button className="btn-info" onClick={() => setSearchTerm('')}>Reintentar</button> {/* Requerimiento: Error [cite: 30] */}
+            <button className="btn-info" onClick={() => setSearchTerm('')}>Limpiar filtros</button>
           </div>
-        ) : characters.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '50px' }}>No hay resultados.</div> // Requerimiento: Empty state [cite: 31]
         ) : (
           <div className="characters-grid">
             {characters.map(c => (
@@ -122,12 +117,18 @@ export function CharactersPage() {
                 key={c.id} 
                 className="character-card" 
                 onClick={() => navigate(`/characters/${c.id}`)}
-                tabIndex={0} // Requerimiento: Navegación por teclado 
+                tabIndex={0}
               >
-                <img src={c.image} alt={c.name} /> {/* Requerimiento: Alt en imágenes  */}
-                <div className="card-info">
-                  <p style={{ fontWeight: 'bold', margin: 0 }}>{c.name}</p>
-                  <p style={{ color: 'var(--accent)', fontSize: '0.8rem' }}>{c.status} - {c.species}</p>
+                <img src={c.image} alt={c.name} loading="lazy" />
+                {/* Overlay con degradado para legibilidad del nombre */}
+                <div className="card-info-overlay">
+                  <div className="card-text-wrapper">
+                    <h3>{c.name}</h3>
+                    <div className="card-meta">
+                      <span className={`status-dot ${c.status.toLowerCase()}`}></span>
+                      {c.status} - {c.species}
+                    </div>
+                  </div>
                 </div>
               </article>
             ))}
@@ -135,22 +136,11 @@ export function CharactersPage() {
         )}
       </div>
 
-      {/* Paginación funcional [cite: 25] */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', paddingBottom: '100px' }}>
-        <button 
-          className="btn-info" 
-          disabled={page <= 1} 
-          onClick={() => setSearchParams({ name, status, page: String(page - 1) })}
-        >
-          Anterior
-        </button>
-        <span style={{ alignSelf: 'center' }}>Página {page}</span>
-        <button 
-          className="btn-info" 
-          onClick={() => setSearchParams({ name, status, page: String(page + 1) })}
-        >
-          Siguiente
-        </button>
+      {/* Paginación */}
+      <div className="pagination">
+        <button className="btn-info" disabled={page <= 1} onClick={() => setSearchParams({ name, status, page: String(page - 1) })}>Anterior</button>
+        <span className="page-indicator">Página {page}</span>
+        <button className="btn-info" onClick={() => setSearchParams({ name, status, page: String(page + 1) })}>Siguiente</button>
       </div>
     </div>
   );
