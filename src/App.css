@@ -71,7 +71,7 @@ body,
   font-size: 2rem;
   text-decoration: none;
   letter-spacing: -1px;
-  filter: drop-shadow(0 0 10px rgba(229, 9, 20, 0.3));
+  filter: drop-shadow(0 0 10px rgba(114, 238, 13, 0.3));
 }
 
 /* Arreglo del Nav: Flexbox para evitar puntos y desalineación */
